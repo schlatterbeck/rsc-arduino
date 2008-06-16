@@ -13,18 +13,28 @@
  * based on an orginal by H. Barragan for the Wiring i/o board
  */
 
-int ledPin = 13;                 // LED connected to digital pin 13
+int ledPins [3] = {11, 12, 13};
 
 void setup()
 {
-  pinMode(ledPin, OUTPUT);      // sets the digital pin as output
+  int k;
+  for (k=0; k<3; k++)
+  {
+      int ledPin = ledPins [k];
+      pinMode(ledPin, OUTPUT); // sets the digital pin as output
+  }
 }
 
 void loop()
 {
-  digitalWrite(ledPin, HIGH);   // sets the LED on
-  delay(1000);                  // waits for a second
-  digitalWrite(ledPin, LOW);    // sets the LED off
-  delay(1000);                  // waits for a second
+  int k;
+  for (k=0; k<3; k++)
+  {
+      int ledPin = ledPins [k];
+      digitalWrite(ledPin, HIGH);   // sets the LED on
+      delay(5000);                  // waits for a second
+      digitalWrite(ledPin, LOW);    // sets the LED off
+      delay(5000);                  // waits for a second
+  }
 }
 
