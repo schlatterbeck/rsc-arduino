@@ -18,6 +18,8 @@
 
 #define SERIAL_MAX  256
 
+#define HALF_ROLLOVER_MS (34359739 / 2)
+
 struct water_s
     { unsigned long action_time;
       bool          action_valid;
@@ -55,9 +57,9 @@ bool timeout_reached
 {
     if (last > now)
     {
-        last    -= 0x7FFFFFFF;
-        now     -= 0x7FFFFFFF;
-        timeout -= 0x7FFFFFFF;
+        last    -= HALF_ROLLOVER_MS;
+        now     -= HALF_ROLLOVER_MS;
+        timeout -= HALF_ROLLOVER_MS;
     }
     if (timeout > last && timeout <= now)
     {
