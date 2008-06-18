@@ -10,7 +10,7 @@ F_CPU         = 16000000
 
 
 for k in range (34359730, 34359751) :
-    print k, (k * (F_CPU / 128000) * 64 * 2) % ulong_modulus / (F_CPU / 128000)
+    print k, ((k * (F_CPU / 128000)) & ~127) % ulong_modulus / (F_CPU / 128000)
 
 y = 0x100000000 / 128 
 for k in range (y - 200, y + 200) :
