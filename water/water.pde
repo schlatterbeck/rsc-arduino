@@ -104,8 +104,8 @@ void loop ()
         int b = serialbuf [serialpos] = Serial.read ();
         if (b == '\n' || b == '\r')
         {
-            Serial.println (serialbuf);
             serialbuf [serialpos] = '\0';
+            Serial.println (serialbuf);
             if (  serialbuf [0] == 'v'
                && serialbuf [1] >= '0'
                && serialbuf [1] <= '2'
