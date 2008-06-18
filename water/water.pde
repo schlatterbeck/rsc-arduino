@@ -13,8 +13,8 @@
  */
 
 #include <ctype.h>
-#define DEBOUNCE_TIME_MS  300
-#define TURNOFF_TIME_MS  3000
+#define DEBOUNCE_TIME_MS     500
+#define TURNOFF_TIME_MS  3600000
 
 #define SERIAL_MAX  256
 
@@ -28,14 +28,14 @@ struct water_s
     };
 
 static struct water_s water [3] =
-    { { 0, false, 0, false, 11, 3}
-    , { 0, false, 0, false, 12, 4}
-    , { 0, false, 0, false, 13, 5}
+    { { 0, false, 0, false, 11, 2}
+    , { 0, false, 0, false, 12, 3}
+    , { 0, false, 0, false, 13, 4}
     };
 
 static char serialbuf [SERIAL_MAX];
 static int  serialpos = 0;
-static unsigned long last;
+static unsigned long last = 0;
 
 void setup ()
 {
@@ -101,9 +101,10 @@ void loop ()
     // Serial commands
     if (Serial.available ())
     {
-        serialbuf [serialpos] = Serial.read ();
-        if (serialbuf [serialpos] == '\n')
+        int b = serialbuf [serialpos] = Serial.read ();
+        if (b == '\n' || b == '\r')
         {
+            Serial.println (serialbuf);
             serialbuf [serialpos] = '\0';
             if (  serialbuf [0] == 'v'
                && serialbuf [1] >= '0'
@@ -119,13 +120,13 @@ void loop ()
                         break;
                     }
                 }
-                if (strcmp (serialbuf + i, "on"))
+                if (!strncmp (serialbuf + i, "on", 2))
                 {
                     digitalWrite (w->out_pin, HIGH);
                     w->action_time  = now + TURNOFF_TIME_MS;
                     w->action_valid = true;
                 }
-                else if (strcmp (serialbuf + i, "off"))
+                else if (!strncmp (serialbuf + i, "off", 3))
                 {
                     digitalWrite (w->out_pin, LOW);
                     w->action_valid = false;
@@ -151,6 +152,7 @@ void loop ()
         {
             digitalWrite (w->out_pin, LOW);
             w->action_valid = false;
+            Serial.println ("timeout");
         }
     }
     last = now;
