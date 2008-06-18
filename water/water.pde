@@ -1,3 +1,5 @@
+#include <timer.h>
+
 /* Water
  * ------------
  *
@@ -18,21 +20,26 @@
 
 #define SERIAL_MAX  256
 
-#define ROLLOVER_MS (34359739 * 2)
-
 struct water_s
-    { unsigned long action_time;
-      bool          action_valid;
-      unsigned long debounce_time;
-      bool          debounce_valid;
+    { Arduino_Timer turn_off;
+      Arduino_Timer debounce;
       int           out_pin;
       int           in_pin;
     };
 
 static struct water_s water [3] =
-    { { 0, false, 0, false, 11, 2}
-    , { 0, false, 0, false, 12, 3}
-    , { 0, false, 0, false, 13, 4}
+    { { Arduino_Timer (TURNOFF_TIME_MS)
+      , Arduino_Timer (DEBOUNCE_TIME_MS)
+      , 11, 2
+      }
+    , { Arduino_Timer (TURNOFF_TIME_MS)
+      , Arduino_Timer (DEBOUNCE_TIME_MS)
+      , 12, 3
+      }
+    , { Arduino_Timer (TURNOFF_TIME_MS)
+      , Arduino_Timer (DEBOUNCE_TIME_MS)
+      , 13, 4
+      }
     };
 
 static char serialbuf [SERIAL_MAX];
@@ -52,22 +59,6 @@ void setup ()
     Serial.begin (19200);
 }
 
-bool timeout_reached 
-    (unsigned long last, unsigned long now, unsigned long timeout)
-{
-    if (last > now)
-    {
-        last    -= ROLLOVER_MS;
-        now     -= ROLLOVER_MS;
-        timeout -= ROLLOVER_MS;
-    }
-    if (timeout > last && timeout <= now)
-    {
-        return true;
-    }
-    return false;
-}
-
 void loop ()
 {
     int k;
@@ -78,25 +69,23 @@ void loop ()
     {
         struct water_s *w = & water [k];
         int b = digitalRead (w->in_pin);
-        if (w->debounce_valid && timeout_reached (last, now, w->debounce_time))
+        if (w->debounce.is_reached (now))
         {
-            w->debounce_valid = false;
+            w->debounce.stop ();
         }
-        if (!b && !w->debounce_valid)
+        if (!b && !w->debounce.is_started ())
         {
             int pin = digitalRead (w->out_pin);
-            w->debounce_time  = now + DEBOUNCE_TIME_MS;
-            w->debounce_valid = true;
+            w->debounce.start (now);
             if (pin)
             {
+                w->turn_off.stop ();
                 digitalWrite (w->out_pin, LOW);
-                w->action_valid = false;
             }
             else
             {
                 digitalWrite (w->out_pin, HIGH);
-                w->action_time  = now + TURNOFF_TIME_MS;
-                w->action_valid = true;
+                w->turn_off.start (now);
             }
         }
     }
@@ -125,13 +114,12 @@ void loop ()
                 if (!strncmp (serialbuf + i, "on", 2))
                 {
                     digitalWrite (w->out_pin, HIGH);
-                    w->action_time  = now + TURNOFF_TIME_MS;
-                    w->action_valid = true;
+                    w->turn_off.start (now);
                 }
                 else if (!strncmp (serialbuf + i, "off", 3))
                 {
+                    w->turn_off.stop ();
                     digitalWrite (w->out_pin, LOW);
-                    w->action_valid = false;
                 }
             }
             serialpos = 0;
@@ -150,10 +138,10 @@ void loop ()
     for (k=0; k<3; k++)
     {
         struct water_s *w = & water [k];
-        if (w->action_valid && timeout_reached (last, now, w->action_time))
+        if (w->turn_off.is_reached (now))
         {
             digitalWrite (w->out_pin, LOW);
-            w->action_valid = false;
+            w->turn_off.stop ();
             Serial.println ("timeout");
         }
     }

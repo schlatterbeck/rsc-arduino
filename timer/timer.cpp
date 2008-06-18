@@ -1,20 +1,34 @@
 #include "timer.h"
     
-void ArduinoTimer::Start (unsigned long now, unsigned long duration)
+Arduino_Timer::Arduino_Timer (unsigned long duration)
+    : default_duration (duration)
+{
+}
+
+void Arduino_Timer::start (unsigned long now, unsigned long duration)
 {
     started = true;
     last = now;
+    if (duration == 0)
+    {
+        duration = default_duration;
+    }
     end  = (now + duration) % MODULUS;
 }
 
-void ArduinoTimer::Stop ()
+void Arduino_Timer::stop ()
 {
     started = false;
 }
 
-bool ArduinoTimer::Reached (unsigned long now)
+bool Arduino_Timer::is_reached (unsigned long now)
 {
     if (now < last)
         return started && now > end;
     return started && last < end && end <= now;
+}
+
+bool Arduino_Timer::is_started ()
+{
+    return started;
 }
