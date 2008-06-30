@@ -5,6 +5,11 @@ Arduino_Timer::Arduino_Timer (unsigned long duration)
 {
 }
 
+unsigned long Arduino_Timer::get_endtime (void)
+{
+    return end;
+}
+
 void Arduino_Timer::start (unsigned long now, unsigned long duration)
 {
     started = true;

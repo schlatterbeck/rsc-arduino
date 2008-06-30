@@ -5,7 +5,7 @@
  *
  * turns on and off a Triac and light emitting diode(LED) connected to a
  * digital  pin. The triac switches on a water valve.
- * Uses pins 11, 12, 13 for digital output.
+ * Uses pins 10, 11, 12 for digital output.
  * Regularly ask serial driver for new commands. Commands are of the
  * form 'v[012] on' or 'v[012] off'.
  * Also ask push-button on digital input pins 3,4,5. debounce
@@ -30,15 +30,15 @@ struct water_s
 static struct water_s water [3] =
     { { Arduino_Timer (TURNOFF_TIME_MS)
       , Arduino_Timer (DEBOUNCE_TIME_MS)
-      , 11, 2
+      , 10, 2
       }
     , { Arduino_Timer (TURNOFF_TIME_MS)
       , Arduino_Timer (DEBOUNCE_TIME_MS)
-      , 12, 3
+      , 11, 3
       }
     , { Arduino_Timer (TURNOFF_TIME_MS)
       , Arduino_Timer (DEBOUNCE_TIME_MS)
-      , 13, 4
+      , 12, 4
       }
     };
 
@@ -68,25 +68,29 @@ void loop ()
     for (k=0; k<3; k++)
     {
         struct water_s *w = & water [k];
-        int b = digitalRead (w->in_pin);
-        if (w->debounce.is_reached (now))
+        int b = digitalRead (w->in_pin); // Button is active low
+        // Inactive button and timeout reached, turn off debounce
+        if (b && w->debounce.is_reached (now))
         {
             w->debounce.stop ();
         }
-        if (!b && !w->debounce.is_started ())
+        if (!b)
         {
-            int pin = digitalRead (w->out_pin);
+            if (!w->debounce.is_started ())
+            {
+                int pin = digitalRead (w->out_pin);
+                if (pin)
+                {
+                    w->turn_off.stop ();
+                    digitalWrite (w->out_pin, LOW);
+                }
+                else
+                {
+                    digitalWrite (w->out_pin, HIGH);
+                    w->turn_off.start (now);
+                }
+            }
             w->debounce.start (now);
-            if (pin)
-            {
-                w->turn_off.stop ();
-                digitalWrite (w->out_pin, LOW);
-            }
-            else
-            {
-                digitalWrite (w->out_pin, HIGH);
-                w->turn_off.start (now);
-            }
         }
     }
     // Serial commands
@@ -120,6 +124,25 @@ void loop ()
                 {
                     w->turn_off.stop ();
                     digitalWrite (w->out_pin, LOW);
+                }
+                else if (!strncmp (serialbuf + i, "st", 2))
+                {
+                    char buf [81];
+                    sprintf (buf, "Time: %lu", now)
+                    Serial.println (buf);
+                    for (k=0; k<3; k++)
+                    {
+                        struct water_s *w = & water [k];
+                        int pin = digitalRead (w->out_pin);
+                        sprintf
+                            ( buf, "V %d: %d (t:%d) time: %lu"
+                            , k
+                            , pin
+                            , w->turn_off.is_started  ()
+                            , w->turn_off.get_endtime ()
+                            )
+                        Serial.println (buf);
+                    }
                 }
             }
             serialpos = 0;

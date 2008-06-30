@@ -10,6 +10,7 @@ class Arduino_Timer
         Arduino_Timer  (unsigned long duration = 0);
         ~Arduino_Timer () {};
 
+        unsigned long get_endtime (void);
         void start      (unsigned long now, unsigned long duration = 0);
         void stop       ();
         bool is_reached (unsigned long now);
