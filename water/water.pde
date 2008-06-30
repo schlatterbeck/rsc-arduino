@@ -127,21 +127,20 @@ void loop ()
                 }
                 else if (!strncmp (serialbuf + i, "st", 2))
                 {
-                    char buf [81];
-                    sprintf (buf, "Time: %lu", now)
-                    Serial.println (buf);
+                    Serial.print   ("Time: ");
+                    Serial.println (now);
                     for (k=0; k<3; k++)
                     {
                         struct water_s *w = & water [k];
                         int pin = digitalRead (w->out_pin);
-                        sprintf
-                            ( buf, "V %d: %d (t:%d) time: %lu"
-                            , k
-                            , pin
-                            , w->turn_off.is_started  ()
-                            , w->turn_off.get_endtime ()
-                            )
-                        Serial.println (buf);
+                        Serial.print   ("V ");
+                        Serial.print   (k);
+                        Serial.print   (": ");
+                        Serial.print   (pin);
+                        Serial.print   (" (t:");
+                        Serial.print   (w->turn_off.is_started  ());
+                        Serial.print   (") time: ");
+                        Serial.println (w->turn_off.get_endtime ());
                     }
                 }
             }
