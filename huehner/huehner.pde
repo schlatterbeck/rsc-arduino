@@ -43,6 +43,8 @@ void setup ()
 void loop ()
 {
     int val   = 0;
+    val   = analogRead (FOTO);
+    motor = val / 8 + MOTOR_MIN;
     if (!digitalRead (MAGNET1))
     {
         digitalWrite (LED,   HIGH);
@@ -53,23 +55,23 @@ void loop ()
         digitalWrite (LED, LOW);
         digitalWrite (MOTOR, LOW);
     }
+    Serial.print   (motor); 
+    Serial.print   ("/"); 
+    Serial.println (direction); 
+
     delay (1000);
-    motor += 0x20;
-    if (motor > 0xFF)
-    {
-        if (direction)
-        {
-            linksrum ();
-        }
-        else
-        {
-            rechtsrum ();
-        }
-        direction = !direction;
-        motor     = MOTOR_MIN;
-    }
-    //val = analogRead(FOTO);
-    Serial.print(motor); 
-    Serial.print("/"); 
-    Serial.println(direction); 
+//    motor += 0x20;
+//    if (motor > 0xFF)
+//    {
+//        if (direction)
+//        {
+//            linksrum ();
+//        }
+//        else
+//        {
+//            rechtsrum ();
+//        }
+//        direction = !direction;
+//        motor     = MOTOR_MIN;
+//    }
 }
