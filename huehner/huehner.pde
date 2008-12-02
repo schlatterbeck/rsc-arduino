@@ -2,8 +2,8 @@
 #include <stdio.h>
 
 # define LED          13
-# define MAGNET_OBEN   8
-# define MAGNET_UNTEN  7
+# define MAGNET_OBEN   7
+# define MAGNET_UNTEN  8
 # define FOTO          0
 # define MOTOR         9
 # define MOTOR_DIR1    4
@@ -28,16 +28,36 @@
 int status   = STATUS_ERROR;
 char errbuf [80];
 char *errmsg = "";
-int neuinitialisieren = 1;
+int neuinitialisieren     = 1;
+int debounce_magnet       = 0;
+int debounce_knopf_runter = 0;
+int debounce_knopf_rauf   = 0;
 
 # define TIMER_MS       10000 // 10 seconds debounce 300000 // 5 minutes
 # define FAHRZEIT_MS    20000 // max 20 seconds for up/down of door
 Arduino_Timer timer (TIMER_MS);
 
+int debounced_read (int iopin, int *counter)
+{
+    if (!digitalRead (iopin))
+    {
+        if ((*counter)++ >= 10)
+        {
+            *counter = 0;
+            return 0;
+        }
+    }
+    else
+    {
+        *counter = 0;
+    }
+    return 1;
+}
+
 void motor_an ()
 {
     digitalWrite (LED,   HIGH);
-    //digitalWrite (MOTOR, HIGH);
+    digitalWrite (MOTOR, HIGH);
 }
 
 void motor_aus ()
@@ -64,8 +84,9 @@ void rechtsrum ()
 
 int fahren (int magnet)
 {
-    if (!digitalRead (magnet))
+    if (!debounced_read (magnet, &debounce_magnet))
     {
+        Serial.println ("stop");
         return 1;
     }
     if (timer.is_reached (millis ()))
@@ -88,6 +109,7 @@ int starte_rauffahren ()
         return 0;
     }
     timer.start (millis (), FAHRZEIT_MS);
+    debounce_magnet = 0;
     rechtsrum ();
     motor_an  ();
     return 1;
@@ -107,6 +129,7 @@ int starte_runterfahren ()
         return 0;
     }
     timer.start (millis (), FAHRZEIT_MS);
+    debounce_magnet = 0;
     linksrum  ();
     motor_an  ();
     return 1;
@@ -241,18 +264,17 @@ void setup ()
 void loop ()
 {
     struct state *st = &stati [status];
-    // Hard-coded error state must work if state-table is broken
-    if (!digitalRead (KNOPF_RUNTER))
+    if (!debounced_read (KNOPF_RUNTER, &debounce_knopf_runter))
     {
-        Serial.println ("LINKSRUM");
+        debounce_knopf_runter = 10;
         linksrum  ();
         motor_an  ();
         neuinitialisieren = 1;
         return;
     }
-    else if (!digitalRead (KNOPF_RAUF))
+    else if (!debounced_read (KNOPF_RAUF, &debounce_knopf_rauf))
     {
-        Serial.println ("RECHTSRUM");
+        debounce_knopf_rauf = 10;
         rechtsrum ();
         motor_an  ();
         neuinitialisieren = 1;
@@ -271,8 +293,12 @@ void loop ()
             status = STATUS_NACHT;
         }
         neuinitialisieren = 0;
+        debounce_knopf_rauf = debounce_knopf_runter = 0;
+        Serial.print ("Initialized to: ");
+        Serial.println (status);
         return;
     }
+    // Hard-coded error state must work if state-table is broken
     if (status >= STATUS_ERROR)
     {
         error ();
