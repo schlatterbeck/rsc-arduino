@@ -68,14 +68,14 @@ void motor_aus ()
 
 void linksrum ()
 {
-    digitalWrite (MOTOR_DIR1, HIGH);
-    digitalWrite (MOTOR_DIR2, LOW);
+    digitalWrite (MOTOR_DIR1, LOW);
+    digitalWrite (MOTOR_DIR2, HIGH);
 }
 
 void rechtsrum ()
 {
-    digitalWrite (MOTOR_DIR1, LOW);
-    digitalWrite (MOTOR_DIR2, HIGH);
+    digitalWrite (MOTOR_DIR1, HIGH);
+    digitalWrite (MOTOR_DIR2, LOW);
 }
 
 // Wir benutzen Status-Funktionen fuer jeden Status unserer Maschine:
@@ -86,7 +86,6 @@ int fahren (int magnet)
 {
     if (!debounced_read (magnet, &debounce_magnet))
     {
-        Serial.println ("stop");
         return 1;
     }
     if (timer.is_reached (millis ()))
@@ -206,7 +205,7 @@ int error ()
 {
     motor_aus ();
     Serial.println (errmsg); 
-    delay (1000);
+    delay (100);
     return 0;
 }
 
@@ -251,7 +250,6 @@ void setup ()
     digitalWrite (KNOPF_RUNTER, HIGH); // enable pull-up resistor
     digitalWrite (KNOPF_RAUF,   HIGH); // enable pull-up resistor
     Serial.begin (115200);
-    errmsg = "Unbekannte Tuerposition bei Start";
     if (FINSTER >= HELL)
     {
         status = STATUS_ERROR;
@@ -283,6 +281,7 @@ void loop ()
     else if (neuinitialisieren)
     {
         motor_aus ();
+        errmsg = "Unbekannte Tuerposition bei Start";
         status = STATUS_ERROR;
         if (!digitalRead (MAGNET_OBEN))
         {
@@ -319,10 +318,10 @@ void loop ()
     if (st->statefun ())
     {
         status = st->next_status;
-        if (status != st->status)
-        {
-            sprintf (errbuf, "new state: %d->%d", st->status, status); 
-            Serial.println (errbuf);
-        }
+    }
+    if (status != st->status)
+    {
+        sprintf (errbuf, "new state: %d->%d", st->status, status); 
+        Serial.println (errbuf);
     }
 }
