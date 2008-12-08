@@ -34,7 +34,7 @@ int debounce_knopf_runter = 0;
 int debounce_knopf_rauf   = 0;
 
 # define TIMER_MS       10000 // 10 seconds debounce 300000 // 5 minutes
-# define FAHRZEIT_MS    20000 // max 20 seconds for up/down of door
+# define FAHRZEIT_MS    75000 // max 75 seconds for up/down of door
 Arduino_Timer timer (TIMER_MS);
 
 int debounced_read (int iopin, int *counter)
@@ -144,6 +144,7 @@ int nacht ()
     int val;
     motor_aus ();
     val = analogRead (FOTO);
+    Serial.println (val);
     if (val > HELL)
     {
         timer.start (millis ());
@@ -157,6 +158,7 @@ int tag ()
     int val;
     motor_aus ();
     val = analogRead (FOTO);
+    Serial.println (val);
     if (val < FINSTER)
     {
         timer.start (millis ());
