@@ -206,7 +206,7 @@ int morgen ()
 int error ()
 {
     motor_aus ();
-    Serial.println (errmsg); 
+    Serial.println (errmsg);
     delay (100);
     return 0;
 }
@@ -308,7 +308,7 @@ void loop ()
     if (st->status != status)
     {
         status = STATUS_ERROR;
-        sprintf 
+        sprintf
             ( errbuf
             , "Error in state-table, expected %d got %d"
             , status
@@ -323,7 +323,7 @@ void loop ()
     }
     if (status != st->status)
     {
-        sprintf (errbuf, "new state: %d->%d", st->status, status); 
+        sprintf (errbuf, "new state: %d->%d", st->status, status);
         Serial.println (errbuf);
     }
 }
