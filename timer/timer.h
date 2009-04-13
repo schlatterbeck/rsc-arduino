@@ -18,7 +18,7 @@ class Arduino_Timer
     private:
         // old version for arduino befor 0012 overflows at that value
         //static const unsigned long MODULUS = 34359738UL;
-        static const unsigned long MODULUS = 0UL;
+        static const unsigned long MODULUS = 1UL;
         bool started;
         unsigned long last;
         unsigned long end;

@@ -18,7 +18,11 @@ void Arduino_Timer::start (unsigned long now, unsigned long duration)
     {
         duration = default_duration;
     }
-    end  = (now + duration) % MODULUS;
+    end  = (now + duration);
+    if (MODULUS != 1)
+    {
+        end = end % MODULUS;
+    }
 }
 
 void Arduino_Timer::stop ()

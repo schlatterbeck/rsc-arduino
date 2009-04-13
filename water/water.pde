@@ -1,4 +1,5 @@
 #include <timer.h>
+#include <debounce.h>
 
 /* Water
  * ------------
@@ -21,24 +22,27 @@
 #define SERIAL_MAX  256
 
 struct water_s
-    { Arduino_Timer turn_off;
-      Arduino_Timer debounce;
-      int           out_pin;
-      int           in_pin;
+    { Arduino_Timer   turn_off;
+      Arduino_Timer   debounce;
+      int             out_pin;
+      Debounced_Input in_pin;
     };
 
 static struct water_s water [3] =
-    { { Arduino_Timer (TURNOFF_TIME_MS)
-      , Arduino_Timer (DEBOUNCE_TIME_MS)
-      , 10, 2
+    { { Arduino_Timer   (TURNOFF_TIME_MS)
+      , Arduino_Timer   (DEBOUNCE_TIME_MS)
+      , 10
+      , Debounced_Input (2, DEBOUNCE_TIME_MS)
       }
-    , { Arduino_Timer (TURNOFF_TIME_MS)
-      , Arduino_Timer (DEBOUNCE_TIME_MS)
-      , 11, 3
+    , { Arduino_Timer   (TURNOFF_TIME_MS)
+      , Arduino_Timer   (DEBOUNCE_TIME_MS)
+      , 11
+      , Debounced_Input (3, DEBOUNCE_TIME_MS)
       }
-    , { Arduino_Timer (TURNOFF_TIME_MS)
-      , Arduino_Timer (DEBOUNCE_TIME_MS)
-      , 12, 4
+    , { Arduino_Timer   (TURNOFF_TIME_MS)
+      , Arduino_Timer   (DEBOUNCE_TIME_MS)
+      , 12
+      , Debounced_Input (4, DEBOUNCE_TIME_MS)
       }
     };
 
@@ -53,8 +57,6 @@ void setup ()
     {
         struct water_s *w = & water [k];
         pinMode      (w->out_pin, OUTPUT);
-        pinMode      (w->in_pin,  INPUT);
-        digitalWrite (w->in_pin,  HIGH); // enable pull-up resistor
     }
     Serial.begin (19200);
 }
@@ -68,7 +70,7 @@ void loop ()
     for (k=0; k<3; k++)
     {
         struct water_s *w = & water [k];
-        int b = digitalRead (w->in_pin); // Button is active low
+        int b = w->in_pin.read (); // Button is active low
         // Inactive button and timeout reached, turn off debounce
         if (b && w->debounce.is_reached (now))
         {
