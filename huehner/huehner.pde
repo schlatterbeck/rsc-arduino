@@ -19,11 +19,12 @@
 # define STATUS_ABEND        1
 # define STATUS_NACHT        2
 # define STATUS_MORGEN       3
-# define STATUS_START_RAUF   4
-# define STATUS_RAUFFAHREN   5
-# define STATUS_START_RUNTER 6
-# define STATUS_RUNTERFAHREN 7
-# define STATUS_ERROR        8
+# define STATUS_NACHBARN     4
+# define STATUS_START_RAUF   5
+# define STATUS_RAUFFAHREN   6
+# define STATUS_START_RUNTER 7
+# define STATUS_RUNTERFAHREN 8
+# define STATUS_ERROR        9
 
 int status   = STATUS_ERROR;
 char errbuf [80];
@@ -35,6 +36,7 @@ int debounce_knopf_rauf   = 0;
 
 # define TIMER_MS       10000 // 10 seconds debounce 300000 // 5 minutes
 # define FAHRZEIT_MS    75000 // max 75 seconds for up/down of door
+# define WARTE_MS     3600000 // 1 hour wait before opening door
 Arduino_Timer timer (TIMER_MS);
 
 int debounced_read (int iopin, int *counter)
@@ -203,6 +205,26 @@ int morgen ()
     return 0;
 }
 
+// Bevor wir die Tuer aufmachen warten wir bis es fuer die Nachbarn (und
+// uns) zumutbar ist, dass der Hahn zu kraehen anfaengt. Solange wir die
+// Tuer nicht aufmachen ist es dunkel genug (und schallgedaemmt). Derzeit
+// liegt der Sonnenaufgang 5:54 wird aber bis Ende April 5:36, wir
+// warten mal ne Stunde und irgendwann sollte es eine RT-Clock geben.
+int warte_auf_nachbarn ()
+{
+    motor_aus ();
+    if (!timer.is_started ())
+    {
+        timer.start (millis (), WARTE_MS);
+    }
+    if (timer.is_reached (millis ()))
+    {
+        timer.stop ();
+        return 1;
+    }
+    return 0;
+}
+
 int error ()
 {
     motor_aus ();
@@ -224,7 +246,8 @@ struct state stati [] =
 { { STATUS_TAG,          STATUS_ABEND,        tag                 }
 , { STATUS_ABEND,        STATUS_START_RUNTER, abend               }
 , { STATUS_NACHT,        STATUS_MORGEN,       nacht               }
-, { STATUS_MORGEN,       STATUS_START_RAUF,   morgen              }
+, { STATUS_MORGEN,       STATUS_NACHBARN,     morgen              }
+, { STATUS_NACHBARN,     STATUS_START_RAUF,   warte_auf_nachbarn  }
 , { STATUS_START_RAUF,   STATUS_RAUFFAHREN,   starte_rauffahren   }
 , { STATUS_RAUFFAHREN,   STATUS_TAG,          rauffahren          }
 , { STATUS_START_RUNTER, STATUS_RUNTERFAHREN, starte_runterfahren }
