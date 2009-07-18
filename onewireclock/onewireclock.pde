@@ -42,18 +42,21 @@ void loop(void) {
     clock.write  (0x17);
     clock.write  (0x05);
     clock.write  (0x00);
-
-    delay (1000);
-
     clock.reset  ();
-    clock.select (addr);
-    clock.write  (0x66);
-    for (i=0; i<5; i++)
+
+    for (int j=0; j<10; j++)
     {
-        byte data;
-        data = clock.read ();
-        Serial.print (data, HEX);
-        Serial.print (' ');
+        delay (1000);
+        clock.reset  ();
+        clock.select (addr);
+        clock.write  (0x66);
+        for (i=0; i<5; i++)
+        {
+            byte data;
+            data = clock.read ();
+            Serial.print (data, HEX);
+            Serial.print (' ');
+        }
+        Serial.print ("\r\n");
     }
-    Serial.print ("\r\n");
 }
