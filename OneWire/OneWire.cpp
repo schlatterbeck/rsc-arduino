@@ -229,53 +229,58 @@ void OneWire::reset_search()
 // enumeration then a 0 is returned.  If a new device is found then
 // its address is copied to newAddr.  Use OneWire::reset_search() to
 // start over.
-// 
+//
+// searchJunction is the branch on the current address at which the
+//    current search is to continue -
+//    prior to this point the path follows the previous address
+//    after this point, at each junction, 0 is selected
+// lastJunction is the last unexplored junction on the present path.
+//    the next search will continue from here
+//
 uint8_t OneWire::search(uint8_t *newAddr)
 {
-    uint8_t i;
-    char lastJunction = -1;
-    uint8_t done = 1;
-    
-    if ( searchExhausted) return 0;
-    
-    if ( !reset()) return 0;
-    write( 0xf0, 0);
-    
-    for( i = 0; i < 64; i++) {
-	uint8_t a = read_bit( );
-	uint8_t nota = read_bit( );
-	uint8_t ibyte = i/8;
-	uint8_t ibit = 1<<(i&7);
-	
-	if ( a && nota) return 0;  // I don't think this should happen, this means nothing responded, but maybe if
-	// something vanishes during the search it will come up.
-	if ( !a && !nota) {
-	    if ( i == searchJunction) {   // this is our time to decide differently, we went zero last time, go one.
-		a = 1;
-		searchJunction = lastJunction;
-	    } else if ( i < searchJunction) {   // take whatever we took last time, look in address
-		if ( address[ ibyte]&ibit) a = 1;
-		else {                            // Only 0s count as pending junctions, we've already exhasuted the 0 side of 1s
-		    a = 0;
-		    done = 0;
-		    lastJunction = i;
-		}
-	    } else {                            // we are blazing new tree, take the 0
-		a = 0;
-		searchJunction = i;
-		done = 0;
-	    }
-	    lastJunction = i;
-	}
-	if ( a) address[ ibyte] |= ibit;
-	else address[ ibyte] &= ~ibit;
-	
-	write_bit( a);
+  uint8_t i = 0;
+  char lastJunction = -1;
+
+  if ( searchExhausted) return 0;
+  searchExhausted = 1; // the search is exhausted unless we find another junction
+
+  if ( !reset()) return 0;
+  write( 0xf0, 0);    // send search ROM
+
+  for( i = 0; i < 64; i++) {
+    uint8_t a = read_bit( );
+    uint8_t nota = read_bit( );
+    uint8_t ibyte = i/8;
+    uint8_t ibit = 1<<(i&7);
+
+    if ( a && nota) return 0;  // I don't think this should happen, this means nothing responded, but maybe if
+    // something vanishes during the search it will come up.
+    if ( !a && !nota) {                    // if at a junction, then
+      if ( i < searchJunction) {           // if before search junction
+        if ( address[ ibyte]&ibit)  a = 1; // follow previous address
+        else a = 0;
+      }
+      else {
+        if ( i == searchJunction) a = 1;// at the search junction take the new branch.
+        else a = 0;                     // past the search junction, on a new branch so select 0
+      }
+      if (!a) {             // if 0 is chosen
+        lastJunction = i;   // set last junction
+        searchExhausted = 0; // continue the search
+      }
     }
-    if ( done) searchExhausted = 1;
-    for ( i = 0; i < 8; i++) newAddr[i] = address[i];
-    return 1;  
+
+    if (a) address[ibyte] |= ibit; // set address bit
+    else address [ibyte] &= ~ibit;
+    write_bit( a);
+  } // end of address bit loop
+  searchJunction = lastJunction;                    // set searchJunction for the next call to Search
+
+  for ( i = 0; i < 8; i++) newAddr[i] = address[i]; // copy found address into output address
+  return 1;  
 }
+
 #endif
 
 #if ONEWIRE_CRC
