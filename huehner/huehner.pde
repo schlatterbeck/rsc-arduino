@@ -6,6 +6,7 @@
 # define MAGNET_UNTEN  8
 # define FOTO          0
 # define MOTOR         9
+# define ERROR_LED    11
 # define MOTOR_DIR1    4
 # define MOTOR_DIR2    3
 # define MOTOR_MIN  0x7F
@@ -228,6 +229,7 @@ int warte_auf_nachbarn ()
 int error ()
 {
     motor_aus ();
+    digitalWrite (ERROR_LED, HIGH);
     Serial.println (errmsg);
     delay (100);
     return 0;
@@ -258,6 +260,7 @@ struct state stati [] =
 void setup ()
 {
     pinMode (LED,         OUTPUT);
+    pinMode (ERROR_LED,   OUTPUT);
     pinMode (MAGNET_OBEN,  INPUT);
     pinMode (MAGNET_UNTEN, INPUT);
     pinMode (MOTOR,       OUTPUT);
@@ -311,10 +314,12 @@ void loop ()
         if (!digitalRead (MAGNET_OBEN))
         {
             status = STATUS_TAG;
+            digitalWrite (ERROR_LED, LOW);
         }
         else if (!digitalRead (MAGNET_UNTEN))
         {
             status = STATUS_NACHT;
+            digitalWrite (ERROR_LED, LOW);
         }
         neuinitialisieren = 0;
         debounce_knopf_rauf = debounce_knopf_runter = 0;
