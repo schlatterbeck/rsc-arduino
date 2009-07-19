@@ -1,3 +1,6 @@
+#ifndef time_h
+#define time_h
+
 typedef signed long time_t;
 
 struct tm {
@@ -15,3 +18,4 @@ struct tm {
 struct tm *gmtime(const time_t *timep);
 struct tm *gmtime_r(const time_t *timep, struct tm *result);
 
+#endif // time_h

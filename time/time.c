@@ -53,6 +53,7 @@ struct tm *gmtime_r (const time_t *timep, struct tm *ptm)
     ptm->tm_mon   = month;
     ptm->tm_mday  = t + 1;
     ptm->tm_isdst = 0;
+    return ptm;
 }
 
 struct tm *gmtime (const time_t *timep)

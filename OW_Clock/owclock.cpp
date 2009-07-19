@@ -1,36 +1,38 @@
-#include "owtimer.h"
+#include "owclock.h"
     
-OW_Clock::OW_Clock (OneWire & clock, char *addr = 0)
+OW_Clock::OW_Clock (OneWire & clock, uint8_t *addr)
     : _addr     (addr)
-    , _is_valid (False)
+    , _clock    (clock)
+    , _is_valid (false)
 {
 
     if (!_addr)
     {
 #if ONEWIRE_SEARCH
-        clock.reset_search ();
-        while (clock.search (_addr) && _addr [0] != 0x27)
+        _clock.reset_search ();
+        while (_clock.search (_buf) && _buf [0] != 0x27)
             {}
 #else
-        clock.write (0x33); // Read ROM
+        _clock.write (0x33); // Read ROM
         for (int i=0; i<8; i++)
         {
-            _addr [i] = clock.read ();
+            _buf [i] = _clock.read ();
         }
 #endif
-        if (  _addr [0] == 0x27
-           && OneWire::crc8 (clock_addr, 7) == clock_addr[7]
+        if (  _buf [0] == 0x27
+           && OneWire::crc8 (_buf, 7) == _buf[7]
            )
         {
-            is_valid = True;
+            _is_valid = true;
+            _addr     = _buf;
         }
     }
 }
 
-const char *OW_Clock::get_addr (void)
+const uint8_t *OW_Clock::get_addr (void)
 {
     // return a static buffer so that our addr isn't modified
-    static char adr [8];
+    static uint8_t adr [8];
     for (int i=0; i<8; i++)
     {
         adr [i] = _addr [1];
@@ -38,30 +40,31 @@ const char *OW_Clock::get_addr (void)
     return adr;
 }
 
-unsigned long OW_Clock::set_time (time_t timestamp)
+void OW_Clock::set_time (time_t timestamp)
 {
     char *ts = (char *) &timestamp;
-    clock.reset  ();
-    clock.select (_addr);
-    clock.write  (0x99); // WRITE CLOCK
-    clock.write  (0x0C); // No interrupt, clock enabled
+    _clock.reset  ();
+    _clock.select (_addr);
+    _clock.write  (0x99); // WRITE CLOCK
+    _clock.write  (0x0C); // No interrupt, clock enabled
     for (int i=0; i<4; i++)
     {
-        clock.write (ts [i]);
+        _clock.write (ts [i]);
     }
-    clock.reset (); // clock starts after reset!
+    _clock.reset (); // clock starts after reset!
 }
 
 time_t OW_Clock::time (void)
 {
     time_t retval = 0;
     char *ts = (char *) &retval;
-    clock.reset  ();
-    clock.select (_addr);
-    clock.write  (0x66); // READ CLOCK
-    clock.read   ();     // ignore device control byte
+    _clock.reset  ();
+    _clock.select (_addr);
+    _clock.write  (0x66); // READ CLOCK
+    _clock.read   ();     // ignore device control byte
     for (int i=0; i<4; i++)
     {
-        ts [i] = clock.read ();
+        ts [i] = _clock.read ();
     }
+    return retval;
 }
