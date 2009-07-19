@@ -2,6 +2,7 @@
  * --------------------------------------------------------
  */
 
+#include <stdio.h>
 #include <OneWire.h>
 #include <time.h>
 #include <owclock.h>
@@ -33,6 +34,7 @@ void loop(void)
 {
     time_t time = clock.time ();
     struct tm *tm;
+    char buf [21];
     if (Serial.available ())
     {
         int b = serialbuf [serialpos++] = Serial.read ();
@@ -47,19 +49,17 @@ void loop(void)
             }
             tm = gmtime (&time);
             Serial.print (time);
-            Serial.print (' ');
-            Serial.print (tm->tm_year + 1900);
-            Serial.print ('-');
-            Serial.print (tm->tm_mon + 1);
-            Serial.print ('-');
-            Serial.print (tm->tm_mday);
-            Serial.print ('.');
-            Serial.print (tm->tm_hour);
-            Serial.print (':');
-            Serial.print (tm->tm_min);
-            Serial.print (':');
-            Serial.print (tm->tm_sec);
-            Serial.println ();
+            sprintf 
+                ( buf
+                , " %4d-%02d-%02d.%02d:%02d:%02d"
+                , tm->tm_year + 1900
+                , tm->tm_mon + 1
+                , tm->tm_mday
+                , tm->tm_hour
+                , tm->tm_min
+                , tm->tm_sec
+                );
+            Serial.println (buf);
             serialpos = 0;
         }
         if (serialpos >= sizeof (serialbuf))
