@@ -1,6 +1,6 @@
-#include "timer.h"
+#include "owtimer.h"
     
-OW_Timer::OW_Timer (OneWire &clock, char *addr = 0)
+OW_Clock::OW_Clock (OneWire & clock, char *addr = 0)
     : _addr     (addr)
     , _is_valid (False)
 {
@@ -27,7 +27,18 @@ OW_Timer::OW_Timer (OneWire &clock, char *addr = 0)
     }
 }
 
-unsigned long OW_Timer::set_time (time_t timestamp)
+const char *OW_Clock::get_addr (void)
+{
+    // return a static buffer so that our addr isn't modified
+    static char adr [8];
+    for (int i=0; i<8; i++)
+    {
+        adr [i] = _addr [1];
+    }
+    return adr;
+}
+
+unsigned long OW_Clock::set_time (time_t timestamp)
 {
     char *ts = (char *) &timestamp;
     clock.reset  ();
@@ -41,7 +52,7 @@ unsigned long OW_Timer::set_time (time_t timestamp)
     clock.reset (); // clock starts after reset!
 }
 
-time_t OW_Timer::time (void)
+time_t OW_Clock::time (void)
 {
     time_t retval = 0;
     char *ts = (char *) &retval;
