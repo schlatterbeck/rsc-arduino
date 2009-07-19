@@ -1,11 +1,15 @@
 #include <timer.h>
 #include <stdio.h>
+#include <time.h>
+#include <OneWire.h>
+#include <owclock.h>
 
 # define LED          13
 # define MAGNET_OBEN   7
 # define MAGNET_UNTEN  8
 # define FOTO          0
 # define MOTOR         9
+# define OWCLOCK      10
 # define ERROR_LED    11
 # define MOTOR_DIR1    4
 # define MOTOR_DIR2    3
@@ -34,10 +38,11 @@ int neuinitialisieren     = 1;
 int debounce_magnet       = 0;
 int debounce_knopf_runter = 0;
 int debounce_knopf_rauf   = 0;
+OneWire  ow    (OWCLOCK);
+OW_Clock clock (ow);
 
 # define TIMER_MS       10000 // 10 seconds debounce 300000 // 5 minutes
 # define FAHRZEIT_MS    75000 // max 75 seconds for up/down of door
-# define WARTE_MS     3600000 // 1 hour wait before opening door
 Arduino_Timer timer (TIMER_MS);
 
 int debounced_read (int iopin, int *counter)
@@ -147,7 +152,7 @@ int nacht ()
     int val;
     motor_aus ();
     val = analogRead (FOTO);
-    Serial.println (val);
+    //Serial.println (val);
     if (val > HELL)
     {
         timer.start (millis ());
@@ -161,7 +166,7 @@ int tag ()
     int val;
     motor_aus ();
     val = analogRead (FOTO);
-    Serial.println (val);
+    //Serial.println (val);
     if (val < FINSTER)
     {
         timer.start (millis ());
@@ -208,19 +213,21 @@ int morgen ()
 
 // Bevor wir die Tuer aufmachen warten wir bis es fuer die Nachbarn (und
 // uns) zumutbar ist, dass der Hahn zu kraehen anfaengt. Solange wir die
-// Tuer nicht aufmachen ist es dunkel genug (und schallgedaemmt). Derzeit
-// liegt der Sonnenaufgang 5:54 wird aber bis Ende April 5:36, wir
-// warten mal ne Stunde und irgendwann sollte es eine RT-Clock geben.
+// Tuer nicht aufmachen ist es dunkel genug (und schallgedaemmt). Wir
+// warten bis 4:30 UTC, das ist 6:30 CEST.
 int warte_auf_nachbarn ()
 {
+    time_t time = clock.time ();
+    struct tm *tm;
     motor_aus ();
-    if (!timer.is_started ())
+
+    if (time < 0)
     {
-        timer.start (millis (), WARTE_MS);
+        return 1;
     }
-    if (timer.is_reached (millis ()))
+    tm = gmtime (&time);
+    if (tm->tm_hour > 4 || tm->tm_hour == 4 && tm->tm_min >= 30)
     {
-        timer.stop ();
         return 1;
     }
     return 0;
@@ -278,13 +285,6 @@ void setup ()
     digitalWrite (KNOPF_RUNTER, HIGH); // enable pull-up resistor
     digitalWrite (KNOPF_RAUF,   HIGH); // enable pull-up resistor
     Serial.begin (115200);
-    if (FINSTER >= HELL)
-    {
-        status = STATUS_ERROR;
-        errmsg = "FINSTER >= HELL";
-    }
-    Serial.print ("initial state: ");
-    Serial.println (status);
 }
 
 void loop ()
@@ -323,6 +323,16 @@ void loop ()
         }
         neuinitialisieren = 0;
         debounce_knopf_rauf = debounce_knopf_runter = 0;
+        if (!clock.is_valid ())
+        {
+            status = STATUS_ERROR;
+            errmsg = "Error initializing clock";
+        }
+        if (FINSTER >= HELL)
+        {
+            status = STATUS_ERROR;
+            errmsg = "FINSTER >= HELL";
+        }
         Serial.print ("Initialized to: ");
         Serial.println (status);
         return;
