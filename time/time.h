@@ -15,7 +15,16 @@ struct tm {
     int tm_isdst;       /* daylight saving time */
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 struct tm *gmtime(const time_t *timep);
 struct tm *gmtime_r(const time_t *timep, struct tm *result);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // time_h

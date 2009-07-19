@@ -22,8 +22,9 @@ struct tm *gmtime_r (const time_t *timep, struct tm *ptm)
     {
         year++;
     }
-    ptm->tm_year = (int)year;
+    ptm->tm_year = year;
     days -= YDAYS(year);
+    t    -= days;
     ptm->tm_yday = t;
     for (month=0; month<12; month++)
     {

@@ -32,6 +32,7 @@ static int serialpos = 0;
 void loop(void)
 {
     time_t time = clock.time ();
+    struct tm *tm;
     if (Serial.available ())
     {
         int b = serialbuf [serialpos++] = Serial.read ();
@@ -40,11 +41,25 @@ void loop(void)
             serialbuf [serialpos - 1] = '\0';
             if (strlen (serialbuf))
             {
-                time = atoi (serialbuf);
+                time = atol (serialbuf);
                 clock.set_time (time);
                 time = clock.time ();
             }
-            Serial.println (time);
+            tm = gmtime (&time);
+            Serial.print (time);
+            Serial.print (' ');
+            Serial.print (tm->tm_year + 1900);
+            Serial.print ('-');
+            Serial.print (tm->tm_mon + 1);
+            Serial.print ('-');
+            Serial.print (tm->tm_mday);
+            Serial.print ('.');
+            Serial.print (tm->tm_hour);
+            Serial.print (':');
+            Serial.print (tm->tm_min);
+            Serial.print (':');
+            Serial.print (tm->tm_sec);
+            Serial.println ();
             serialpos = 0;
         }
         if (serialpos >= sizeof (serialbuf))
