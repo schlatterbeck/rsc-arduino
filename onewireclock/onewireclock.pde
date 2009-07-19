@@ -44,7 +44,7 @@ void loop(void)
                 clock.set_time (time);
                 time = clock.time ();
             }
-            Serial.print (time);
+            Serial.println (time);
             serialpos = 0;
         }
         if (serialpos >= sizeof (serialbuf))

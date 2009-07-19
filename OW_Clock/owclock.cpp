@@ -13,6 +13,7 @@ OW_Clock::OW_Clock (OneWire & clock, uint8_t *addr)
         while (_clock.search (_buf) && _buf [0] != 0x27)
             {}
 #else
+        _clock.reset ();
         _clock.write (0x33); // Read ROM
         for (int i=0; i<8; i++)
         {
@@ -35,7 +36,7 @@ const uint8_t *OW_Clock::get_addr (void)
     static uint8_t adr [8];
     for (int i=0; i<8; i++)
     {
-        adr [i] = _addr [1];
+        adr [i] = _addr [i];
     }
     return adr;
 }
