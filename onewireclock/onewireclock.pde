@@ -45,21 +45,7 @@ void loop(void)
             {
                 time = atol (serialbuf);
                 clock.set_time (time);
-                time = clock.time ();
             }
-            tm = gmtime (&time);
-            Serial.print (time);
-            sprintf 
-                ( buf
-                , " %4d-%02d-%02d.%02d:%02d:%02d"
-                , tm->tm_year + 1900
-                , tm->tm_mon + 1
-                , tm->tm_mday
-                , tm->tm_hour
-                , tm->tm_min
-                , tm->tm_sec
-                );
-            Serial.println (buf);
             serialpos = 0;
         }
         if (serialpos >= sizeof (serialbuf))
@@ -67,4 +53,19 @@ void loop(void)
             serialpos = 0;
         }
     }
+    time = clock.time ();
+    tm = gmtime (&time);
+    Serial.print (time);
+    sprintf 
+        ( buf
+        , " %4d-%02d-%02d.%02d:%02d:%02d"
+        , tm->tm_year + 1900
+        , tm->tm_mon + 1
+        , tm->tm_mday
+        , tm->tm_hour
+        , tm->tm_min
+        , tm->tm_sec
+        );
+    Serial.println (buf);
+    delay (250);
 }
