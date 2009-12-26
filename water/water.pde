@@ -16,8 +16,9 @@
  */
 
 #include <ctype.h>
-#define DEBOUNCE_TIME_MS     500
-#define TURNOFF_TIME_MS  3600000
+#define DEBOUNCE_TIME_MS        500
+#define TURNOFF_TIME_MS     3600000
+#define TURNOFF_TIME_SHORT   600000
 
 #define SERIAL_MAX  256
 
@@ -28,6 +29,7 @@ struct water_s
       Debounced_Input in_pin;
     };
 
+// Note: v2 is the *leftmost* device!
 static struct water_s water [3] =
     { { Arduino_Timer   (TURNOFF_TIME_MS)
       , Arduino_Timer   (DEBOUNCE_TIME_MS)
@@ -39,7 +41,7 @@ static struct water_s water [3] =
       , 11
       , Debounced_Input (3, DEBOUNCE_TIME_MS)
       }
-    , { Arduino_Timer   (TURNOFF_TIME_MS)
+    , { Arduino_Timer   (TURNOFF_TIME_SHORT) // Oleander
       , Arduino_Timer   (DEBOUNCE_TIME_MS)
       , 12
       , Debounced_Input (4, DEBOUNCE_TIME_MS)
