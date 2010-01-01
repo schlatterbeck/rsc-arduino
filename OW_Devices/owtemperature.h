@@ -1,36 +1,23 @@
-#ifndef owtimer_h
-#define owtimer_h
+#ifndef owtemperature_h
+#define owtemperature_h
 
-// Work around a bug in arduino environment:
-// When it compiles the libs, it seems to find sub-libraries, while
-// when compiling the sketch it doesn't. Broken.
-// So we *must* include all sub-libs in the main sketch and not try here
-// to include the stuff when it's already there.
-#ifndef time_h
-#include <time.h>
-#endif
-#ifndef OneWire_h
-#include <OneWire.h>
-#endif
+#include "owdevice.h"
 
 // Wraps OneWire Temperature Sensor Dallas/Maxim DS18S20 into its own class
-class OW_Temperature
+class OW_Temperature : public OW_Device
 {
     public:
-        // If addr is specified, no search is performed
-        // If ONEWIRE_SEARCH is 0 *and* no addr is given, we use the
-        // Read ROM one-wire command. This only works if there's only a
-        // single device on the one-wire bus!
-        OW_Temperature  (OneWire &temperature, uint8_t *addr = 0);
+        OW_Temperature  (OneWire &temperature, uint8_t *addr = 0)
+            : OW_Device (temperature, addr, 0x10)
+            {};
         ~OW_Temperature () {};
 
-        const uint8_t *get_addr    (void);
-        bool           is_valid    (void) { return _is_valid; }
-        time_t         temperature (void);
-    private:
-        uint8_t *_addr;
-        uint8_t  _buf  [8];
-        OneWire &_temperature;
-        bool     _is_valid;
+        int16_t  temperature (void);
+        uint16_t get_aux     (void);
+        void     set_aux     (uint8_t *twobytes);
+        void     read_all    (void);
+
+    protected:
+        void     start_measure (void);
 };
-#endif // owtimer_h
+#endif // owtemperature_h

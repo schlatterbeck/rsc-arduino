@@ -1,54 +1,51 @@
-/* One Wire Clock Dallas/Maxim DS2417 Conrad Part No 170014
- * --------------------------------------------------------
+/* One Wire Temperature Sensor Dallas/Maxim
+ * ----------------------------------------
  */
 
 #include <stdio.h>
 #include <OneWire.h>
 #include <time.h>
-#include <owclock.h>
+#include <owtemperature.h>
+
+OneWire        ow  (3);
  
-OneWire  ow    (2);
-uint8_t _adr [9];
-uint8_t _buf [9];
- 
-void setup(void) {
+void setup(void)
+{
     Serial.begin (9600);
 }
 
 void loop(void)
 {
-    ow.reset_search ();
-    ow.search (_adr);
-    if (OneWire::crc8 (_adr, 7) == _adr [7])
+    /* sensor has adr: 10 DB E8 ED 1 8 0 2A */
+    const uint8_t *adr = 0;
+    OW_Temperature tem (ow);
+    if (!tem.is_valid ())
     {
-        Serial.println ("CRC OK");
+        adr = tem.get_addr ();
+        for (int i=0; i<8; i++)
+        {
+            Serial.print (adr [i], HEX);
+            Serial.print (' ');
+        }
+        Serial.println ("Invalid CRC");
+        return;
     }
+    adr = tem.get_addr ();
     for (int i=0; i<8; i++)
     {
-        Serial.print (_adr [i], HEX);
+        Serial.print (adr [i], HEX);
         Serial.print (' ');
     }
     Serial.println ();
-    ow.reset  ();
-    ow.select (_adr);
-    ow.write (0x4E);
-    ow.write (0x47);
-    ow.write (0x11);
-    ow.reset  ();
-    ow.select (_adr);
-    ow.write (0x44, 1);
-    delay (4711);
-    ow.depower ();
-    ow.reset  ();
-    ow.select (_adr);
-    ow.write (0xBE);
-    for (int i=0; i<9; i++)
+    int16_t temperature = tem.temperature ();
+    Serial.print (temperature >> 4);
+    Serial.print ('.');
+    Serial.print (temperature & 0xF);
+    Serial.println ();
+    adr = tem.get_buf ();
+    for (int i=0; i<8; i++)
     {
-        _buf [i] = ow.read ();
-    }
-    for (int i=0; i<9; i++)
-    {
-        Serial.print (_buf [i], HEX);
+        Serial.print (adr [i], HEX);
         Serial.print (' ');
     }
     Serial.println ();
