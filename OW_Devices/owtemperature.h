@@ -14,7 +14,7 @@ class OW_Temperature : public OW_Device
 
         int16_t  temperature (void);
         uint16_t get_aux     (void);
-        void     set_aux     (uint8_t *twobytes);
+        void     set_aux     (uint16_t value);
         void     read_all    (void);
 
     protected:

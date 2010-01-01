@@ -7,7 +7,7 @@
 #include <time.h>
 #include <owtemperature.h>
 
-OneWire        ow  (3);
+OneWire        ow  (2);
  
 void setup(void)
 {
@@ -30,23 +30,29 @@ void loop(void)
         Serial.println ("Invalid CRC");
         return;
     }
-    adr = tem.get_addr ();
-    for (int i=0; i<8; i++)
-    {
-        Serial.print (adr [i], HEX);
-        Serial.print (' ');
-    }
-    Serial.println ();
+    tem.set_aux (0x4711);
     int16_t temperature = tem.temperature ();
     Serial.print (temperature >> 4);
     Serial.print ('.');
-    Serial.print (temperature & 0xF);
-    Serial.println ();
+    int16_t after = temperature & 0xF;
+    after *= 10000 / 16;
+    int16_t exp = 1;
+    for (int i=0; i<3; i++)
+    {
+        exp *= 10;
+        if (after < exp)
+        {
+            Serial.print (0);
+        }
+    }
+    Serial.print (after);
+    Serial.print ("            ");
     adr = tem.get_buf ();
     for (int i=0; i<8; i++)
     {
         Serial.print (adr [i], HEX);
         Serial.print (' ');
     }
+    Serial.print (tem.get_aux (), HEX);
     Serial.println ();
 }
