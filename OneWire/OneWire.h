@@ -92,7 +92,7 @@ class OneWire
 #if ONEWIRE_CRC
     // Compute a Dallas Semiconductor 8 bit CRC, these are used in the
     // ROM and scratchpad registers.
-    static uint8_t crc8( uint8_t *addr, uint8_t len);
+    static uint8_t crc8(const uint8_t *addr, uint8_t len);
 
 #if ONEWIRE_CRC16
     // Compute a Dallas Semiconductor 16 bit CRC. Maybe. I don't have

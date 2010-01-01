@@ -316,7 +316,7 @@ static uint8_t dscrc_table[] = {
 // compared to all those delayMicrosecond() calls.  But I got
 // confused, so I use this table from the examples.)  
 //
-uint8_t OneWire::crc8( uint8_t *addr, uint8_t len)
+uint8_t OneWire::crc8(const uint8_t *addr, uint8_t len)
 {
     uint8_t i;
     uint8_t crc = 0;
@@ -330,7 +330,7 @@ uint8_t OneWire::crc8( uint8_t *addr, uint8_t len)
 //
 // Compute a Dallas Semiconductor 8 bit CRC directly. 
 //
-uint8_t OneWire::crc8( uint8_t *addr, uint8_t len)
+uint8_t OneWire::crc8(const uint8_t *addr, uint8_t len)
 {
     uint8_t i, j;
     uint8_t crc = 0;

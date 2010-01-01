@@ -32,23 +32,30 @@ void loop(void)
     }
     tem.set_aux (0x4711);
     int16_t temperature = tem.temperature ();
-    Serial.print (temperature >> 4);
-    Serial.print ('.');
-    int16_t after = temperature & 0xF;
-    after *= 10000 / 16;
-    int16_t exp = 1;
-    for (int i=0; i<3; i++)
-    {
-        exp *= 10;
-        if (after < exp)
-        {
-            Serial.print (0);
-        }
-    }
-    Serial.print (after);
-    Serial.print ("            ");
     adr = tem.get_buf ();
-    for (int i=0; i<8; i++)
+    if (adr [7] == 0x10 && OneWire::crc8 (adr, 8) == adr [8])
+    {
+        Serial.print (temperature >> 4);
+        Serial.print ('.');
+        int16_t after = temperature & 0xF;
+        after *= 10000 / 16;
+        int16_t exp = 1;
+        for (int i=0; i<3; i++)
+        {
+            exp *= 10;
+            if (after < exp)
+            {
+                Serial.print (0);
+            }
+        }
+        Serial.print (after);
+    }
+    else
+    {
+        Serial.print ("Invalid temperature");
+    }
+    Serial.print ("            ");
+    for (int i=0; i<9; i++)
     {
         Serial.print (adr [i], HEX);
         Serial.print (' ');
