@@ -226,7 +226,7 @@ int warte_auf_nachbarn ()
         return 1;
     }
     tm = gmtime (&time);
-    if (tm->tm_hour > 4 || tm->tm_hour == 4 && tm->tm_min >= 30)
+    if (tm->tm_hour > 5 || tm->tm_hour == 5 && tm->tm_min >= 45)
     {
         return 1;
     }
