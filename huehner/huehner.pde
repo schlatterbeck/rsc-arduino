@@ -221,7 +221,8 @@ int warte_auf_nachbarn ()
     struct tm *tm;
     motor_aus ();
 
-    return 1;
+    //remove comment to disable waiting
+    //return 1;
     if (time < 0)
     {
         return 1;
