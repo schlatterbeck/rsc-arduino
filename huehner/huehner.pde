@@ -214,7 +214,7 @@ int morgen ()
 // Bevor wir die Tuer aufmachen warten wir bis es fuer die Nachbarn (und
 // uns) zumutbar ist, dass der Hahn zu kraehen anfaengt. Solange wir die
 // Tuer nicht aufmachen ist es dunkel genug (und schallgedaemmt). Wir
-// warten bis 4:30 UTC, das ist 6:30 CEST.
+// warten bis 4:15 UTC, das ist 6:15 CEST.
 int warte_auf_nachbarn ()
 {
     time_t time = clock.time ();
@@ -228,7 +228,7 @@ int warte_auf_nachbarn ()
         return 1;
     }
     tm = gmtime (&time);
-    if (tm->tm_hour > 4 || tm->tm_hour == 4 && tm->tm_min >= 45)
+    if (tm->tm_hour > 4 || tm->tm_hour == 4 && tm->tm_min >= 15)
     {
         return 1;
     }
