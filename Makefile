@@ -15,7 +15,7 @@ URL=http://$(PROJECT).sourceforge.net/
 all: $(SRC)
 
 dist: all
-	tar cvf rsc-arduino-$(LASTRELEASE) $(SRC)
+	tar cvzf rsc-arduino-$(LASTRELEASE).tar.gz $(SRC)
 
 clean:
 	rm -f notes changes default.css \
