@@ -12,7 +12,7 @@ PACKAGE=rsc-arduino
 CHANGES=changes
 NOTES=notes
 
-LICENSE=GNU General Public License (GPL)
+LICENSE=GNU General Public License version 3.0 (GPLv3)
 URL=http://$(PROJECT).sourceforge.net/
 
 all: $(SRC) Makefile
