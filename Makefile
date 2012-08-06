@@ -19,9 +19,12 @@ URL=http://$(PROJECT).sourceforge.net/
 all: $(SRC) Makefile
 
 dist: all
-	mkdir rsc-arduino-$(RELEASE)
-	cp -a $(SRC) rsc-arduino-$(RELEASE)
+	rm -rf build
+	mkdir -p build/rsc-arduino-$(RELEASE) dist
+	cp -a $(SRC) build/rsc-arduino-$(RELEASE)
+	cd build && \
 	tar cvzf rsc-arduino-$(RELEASE).tar.gz $(EXCLUDE) rsc-arduino-$(RELEASE)
+	mv build/rsc-arduino-$(RELEASE).tar.gz dist
 
 clean:
 	rm -f notes changes default.css \
