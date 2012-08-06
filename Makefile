@@ -1,7 +1,10 @@
 LASTRELEASE:=$(shell ../svntools/lastrelease -n)
-RSCARDUINO = Capacity FreqCounter huehner OneWire onewireclock \
+RSCARDUINO=Capacity FreqCounter huehner OneWire onewireclock \
     OW_Devices temperature time timer water
-SRC=Makefile $(RSCARDUINO) README README.html
+SUBDIRS=FreqCounter/Examples FreqCounter/Examples/FreqCounterLib_example \
+    OneWire/examples
+EXCLUDE=$(RSCARDUINO:%=--exclude %/.svn) $(SUBDIRS:%=--exclude %/.svn)
+SRC=$(RSCARDUINO) README README.html
 
 USERNAME=schlatterbeck
 PROJECT=rsc-arduino
@@ -12,10 +15,10 @@ NOTES=notes
 LICENSE=GNU General Public License (GPL)
 URL=http://$(PROJECT).sourceforge.net/
 
-all: $(SRC)
+all: $(SRC) Makefile
 
 dist: all
-	tar cvzf rsc-arduino-$(LASTRELEASE).tar.gz $(SRC)
+	tar cvzf rsc-arduino-$(LASTRELEASE).tar.gz $(EXCLUDE) $(SRC)
 
 clean:
 	rm -f notes changes default.css \
