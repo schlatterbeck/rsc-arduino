@@ -3,7 +3,8 @@ RSCARDUINO=Capacity FreqCounter huehner OneWire onewireclock \
     OW_Devices temperature time timer water
 SUBDIRS=FreqCounter/Examples FreqCounter/Examples/FreqCounterLib_example \
     OneWire/examples
-EXCLUDE=$(RSCARDUINO:%=--exclude %/.svn) $(SUBDIRS:%=--exclude %/.svn)
+EXCLUDE=$(RSCARDUINO:%=--exclude rsc-arduino-$(RELEASE)/%/.svn) \
+    $(SUBDIRS:%=--exclude rsc-arduino-$(RELEASE)/%/.svn)
 SRC=$(RSCARDUINO) README README.html
 
 USERNAME=schlatterbeck
@@ -18,7 +19,9 @@ URL=http://$(PROJECT).sourceforge.net/
 all: $(SRC) Makefile
 
 dist: all
-	tar cvzf rsc-arduino-$(LASTRELEASE).tar.gz $(EXCLUDE) $(SRC)
+	mkdir rsc-arduino-$(RELEASE)
+	cp -a $(SRC) rsc-arduino-$(RELEASE)
+	tar cvzf rsc-arduino-$(RELEASE).tar.gz $(EXCLUDE) rsc-arduino-$(RELEASE)
 
 clean:
 	rm -f notes changes default.css \
