@@ -1,11 +1,23 @@
-Various Arduion Projects
+.. image:: http://sflogo.sourceforge.net/sflogo.php?group_id=212955&type=7
+    :height: 62
+    :width: 210
+    :alt: SourceForge.net Logo
+    :target: http://sourceforge.net/projects/rsc-arduino
+
+
+Various Arduino Projects
 ========================
+
+:Author: Ralf Schlatterbeck <rsc@runtux.com>
 
 Libraries:
 ----------
 
+Libraries need to be installed in the hardware/libraries directory of the
+unpacked arduino software.
+
 - OneWire: Stolen somewhere off the net and fixed device discovery,
-  BSD-style  copyright
+  BSD-style copyright
 - OW_Devices: Builds on top of OneWire and encapsulates different
   devices (in particular a temperature sensor Dallas/Maxim DS18S20 and a
   realtime-clock Dallas/Maxim DS2417)
@@ -16,6 +28,9 @@ Libraries:
 
 Projects:
 ---------
+
+Projects are arduino sketches and need to be installed into your arduino
+``sketchbook.path``.
 
 - Capacity: Measure capacity with two methods: By loading via a resistor
   and measuring the time (for capacities down to about 10 nF) and by
@@ -31,3 +46,10 @@ Projects:
   this switches 220V electric valves with opto-couplers, so I'm not
   making the schematics available because you need to know what you're
   doing with these voltages
+
+License:
+--------
+
+Every file that doesn't have an explicit license in the file itself is covered
+by the GNU General Public License Version 3 or higher.
+http://www.gnu.org/copyleft/gpl.html
