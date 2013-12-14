@@ -57,6 +57,11 @@ http://www.gnu.org/copyleft/gpl.html
 Changes
 -------
 
+Version 0.2: Fixes for newer Arduino development package
+
+- Fix various problems with obsolete include files
+- Fix several compiler warnings
+
 Version 0.1: Initial Release
 
 Initial Release of Arduino Software.
