@@ -12,7 +12,7 @@
 
 
 #include <avr/interrupt.h>
-#include <WProgram.h>
+#include <Arduino.h>
 
 namespace FreqCounter {
 

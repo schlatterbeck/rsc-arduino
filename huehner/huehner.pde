@@ -33,7 +33,7 @@
 
 int status   = STATUS_ERROR;
 char errbuf [80];
-char *errmsg = "";
+const char *errmsg = "";
 int neuinitialisieren     = 1;
 int debounce_magnet       = 0;
 int debounce_knopf_runter = 0;
@@ -228,7 +228,7 @@ int warte_auf_nachbarn ()
         return 1;
     }
     tm = gmtime (&time);
-    if (tm->tm_hour > 4 || tm->tm_hour == 4 && tm->tm_min >= 15)
+    if (tm->tm_hour > 4 || (tm->tm_hour == 4 && tm->tm_min >= 15))
     {
         return 1;
     }

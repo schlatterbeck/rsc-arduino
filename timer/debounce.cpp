@@ -1,5 +1,4 @@
-
-#include <wiring.h>
+#include <Arduino.h>
 #include "debounce.h"
     
 Debounced_Input::Debounced_Input (int input, unsigned long duration)

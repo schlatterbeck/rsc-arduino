@@ -59,7 +59,8 @@ Debounced_Input start_low_capacity  (11, DEBOUNCE_TIME_MS);
 void setup ()
 {
     // init chargePins
-    for (int i=0; i<MAX_RESISTORS; i++)
+
+    for (size_t i=0; i<MAX_RESISTORS; i++)
     {
         pinMode (chargePins [i], INPUT);
         digitalWrite (chargePins [i], LOW); // no pull-up
@@ -76,9 +77,9 @@ void loop ()
     delay (10); // for debouncer to work (frq counter will turn off timer)
     if (!start_high_capacity.read ())
     {
-        for (int j=0; j<MAX_RESISTORS; j++)
+        for (size_t j=0; j<MAX_RESISTORS; j++)
         {
-            for (int i=0; i<MAX_RESISTORS; i++)
+            for (size_t i=0; i<MAX_RESISTORS; i++)
             {
                 pinMode (chargePins [i], INPUT);
                 digitalWrite (chargePins [i], LOW); // no pull-up
@@ -137,7 +138,7 @@ void loop ()
     if (!start_low_capacity.read ())
     {
         float c = 0;
-        char *unit = " pF";
+        const char *unit = " pF";
         // FreqCounter::f_comp = 10; // frq compensation
         FreqCounter::start (1000);
         while (FreqCounter::f_ready == 0)

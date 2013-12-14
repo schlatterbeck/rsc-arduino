@@ -28,7 +28,7 @@ void setup(void) {
 }
 
 static char serialbuf [256];
-static int serialpos = 0;
+static size_t serialpos = 0;
  
 void loop(void)
 {
