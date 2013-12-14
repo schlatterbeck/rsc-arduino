@@ -1,6 +1,7 @@
 #ifndef OneWire_h
 #define OneWire_h
 
+#include <Arduino.h>
 #include <inttypes.h>
 
 // you can exclude onewire_search by defining that to 0

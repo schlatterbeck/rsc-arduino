@@ -1,6 +1,5 @@
 #include "owtemperature.h"
-#include "wiring.h"
-    
+
 int16_t OW_Temperature::temperature (void)
 {
     int16_t temp = 0x0;
