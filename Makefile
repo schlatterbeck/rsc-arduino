@@ -1,4 +1,11 @@
-LASTRELEASE:=$(shell ../svntools/lastrelease -n)
+# To use this Makefile, get a copy of my SF Release Tools
+# git clone git://git.code.sf.net/p/sfreleasetools/code sfreleasetools
+# And point the environment variable RELEASETOOLS to the checkout
+
+ifeq (,${RELEASETOOLS})
+    RELEASETOOLS=../releasetools
+endif
+LASTRELEASE:=$(shell $(RELEASETOOLS)/lastrelease -n)
 RSCARDUINO=Capacity FreqCounter huehner OneWire onewireclock \
     OW_Devices temperature time timer water
 SUBDIRS=FreqCounter/Examples FreqCounter/Examples/FreqCounterLib_example \
@@ -33,7 +40,4 @@ clean:
 	      README.tex
 	rm -rf dist build upload upload_homepage ReleaseNotes.txt
 
-ifeq (,${RELEASETOOLS})
-    RELEASETOOLS=../releasetools
-endif
 include $(RELEASETOOLS)/Makefile-sf
