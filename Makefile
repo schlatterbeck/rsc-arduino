@@ -5,7 +5,8 @@ SUBDIRS=FreqCounter/Examples FreqCounter/Examples/FreqCounterLib_example \
     OneWire/examples
 EXCLUDE=$(RSCARDUINO:%=--exclude rsc-arduino-$(RELEASE)/%/.svn) \
     $(SUBDIRS:%=--exclude rsc-arduino-$(RELEASE)/%/.svn)
-SRC=$(RSCARDUINO) README README.html
+README=README.rst
+SRC=$(RSCARDUINO) $(README) README.html
 
 USERNAME=schlatterbeck
 PROJECT=rsc-arduino
@@ -32,4 +33,7 @@ clean:
 	      README.tex
 	rm -rf dist build upload upload_homepage ReleaseNotes.txt
 
-include ../make/Makefile-sf
+ifeq (,${RELEASETOOLS})
+    RELEASETOOLS=../releasetools
+endif
+include $(RELEASETOOLS)/Makefile-sf
