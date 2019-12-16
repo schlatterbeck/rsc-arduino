@@ -1,0 +1,73 @@
+Magnetschalter-1: Magnet Oben
+Magnetschalter-2: Magnet Unten
+
+Flachband2-1,2: Error-LED
+Flachband2-3,4: Gnd
+Flachband2-5,6: One-Wire Clock
+
+Arduino
+
+ 0    NC
+ 1    NC
+ 2    Button-Down-1
+ 3    Flachband 15+16  (Motor-Dir1)
+ 4    Flachband 05+06  (Motor-Dir2)
+ 5    NC
+ 6    NC
+ 7    Magnetschalter-1.1 (Oben)
+ 8    Magnetschalter-2.1 (Unten)
+ 9    Flachband 03,04    (Motor ein)
+10    Widerstand R2-4k7-1(an +5V), Flachband2-5,6 (One-Wire Clock)
+11    Flachband2-1,2 (Error-LED)
+12    Button-Up-1
+13    NC
+Gnd   Button-Down-2; Button-Up-2; Magnetschalter-1.2; Magnetschalter-2.2
+AREF  NC
+
+A0 Fotowiderstand-2, R1-100k-1
+A1 NC
+A2 NC
+A3 NC
+A4 NC
+A5 NC
+
+Reset  NC
+3V3    NC
+5V     Flachband 0,1; Fotowiderstand-1; R2-4k7-2
+Gnd    Flachband2-3,4; Flachband-9,10,11,12
+Gnd    R1-100k-2
+Vin    Flachband-15,16
+
+Motortreiber
+
+ 1      Flachband-03,04; Arduino-9
+ 2      Flachband-05,06; Arduino-4
+ 3      Flachband-07,08; Motor-1
+ 4      Flachband-09,10; Motortreiber-5,12,13; Arduino-Gnd
+ 5      Flachband-11,12; Motortreiber-4,12,13; Arduino-Gnd
+ 6      Flachband-13,14; Motor-2
+ 7      Flachband-15,16; Arduino-3
+ 8      Flachband-17,18; Arduino-Vin
+ 9      NC
+10      NC
+11      NC
+12      Motortreiber-13,4,5; Arduino-Gnd
+13      Motortreiber-12,4,5; Arduino-Gnd
+14      NC
+15      NC
+16      Flachband-01,02; Arduino-5V
+
+Flachband z. Motortreiber
+jeweils zwei Kabel zusammen
+Vom Stecker letzte zwei unbelegt (20-polig)
+
+01,02 Motortreiber 16; Arduino-5V
+03,04 Motortreiber 01; Arduino-9
+05,06 Motortreiber 02; Arduino-4
+07,08 Motortreiber 03; Motor-1
+09,10 Motortreiber 04; Motortreiber-05; Arduino-Gnd
+11,12 Motortreiber 05; Motortreiber-04; Arduino-Gnd
+13,14 Motortreiber 06; Motor-2
+15,16 Motortreiber 07; Arduino-3
+17,18 Motortreiber 08; Arduino-Vin
+
