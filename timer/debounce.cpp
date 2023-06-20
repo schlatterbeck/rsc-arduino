@@ -12,8 +12,8 @@ Debounced_Input::Debounced_Input (int input, unsigned long duration)
 
 int Debounced_Input::read (void)
 {
-    int           x   = digitalRead (_input);
-    unsigned long now = millis ();
+    volatile int x = digitalRead (_input);
+    volatile unsigned long now = millis ();
 
     if (timer.is_started ()) {
         if (x == current) {
