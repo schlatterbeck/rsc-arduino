@@ -5,24 +5,14 @@ Arduino_Timer::Arduino_Timer (unsigned long duration)
 {
 }
 
-unsigned long Arduino_Timer::get_endtime (void)
-{
-    return end;
-}
-
-void Arduino_Timer::start (unsigned long now, unsigned long duration)
+void Arduino_Timer::start (unsigned long now, unsigned long dur)
 {
     started = true;
-    last = now;
-    if (duration == 0)
-    {
-        duration = default_duration;
+    start_time = now;
+    if (dur == 0) {
+        dur = default_duration;
     }
-    end  = (now + duration);
-    if (MODULUS != 1)
-    {
-        end = end % MODULUS;
-    }
+    duration = dur;
 }
 
 void Arduino_Timer::stop ()
@@ -32,9 +22,7 @@ void Arduino_Timer::stop ()
 
 bool Arduino_Timer::is_reached (unsigned long now)
 {
-    if (now < last)
-        return started && now > end;
-    return started && last < end && end <= now;
+    return now - start_time >= duration;
 }
 
 bool Arduino_Timer::is_started ()

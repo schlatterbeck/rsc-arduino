@@ -10,18 +10,16 @@ class Arduino_Timer
         Arduino_Timer  (unsigned long duration = 0);
         ~Arduino_Timer () {};
 
-        unsigned long get_endtime (void);
         void start      (unsigned long now, unsigned long duration = 0);
         void stop       ();
         bool is_reached (unsigned long now);
         bool is_started ();
-    private:
-        // old version for arduino befor 0012 overflows at that value
-        //static const unsigned long MODULUS = 34359738UL;
-        static const unsigned long MODULUS = 1UL;
+    protected:
+        // old version for arduino before 0012 overflows at that value
+        // static const unsigned long MODULUS = 34359738UL;
         bool started;
-        unsigned long last;
-        unsigned long end;
+        unsigned long start_time;
         unsigned long default_duration;
+        unsigned long duration;
 };
 #endif // timer_h

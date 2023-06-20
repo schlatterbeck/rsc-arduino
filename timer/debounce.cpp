@@ -6,8 +6,7 @@ Debounced_Input::Debounced_Input (int input, unsigned long duration)
     , duration (duration)
     , current  (1)
 {
-    pinMode               (input, INPUT);
-    digitalWrite          (input, HIGH); // enable pull-up resistor
+    pinMode (input, INPUT_PULLUP);
     current = digitalRead (input);
 }
 
@@ -16,25 +15,17 @@ int Debounced_Input::read (void)
     int           x   = digitalRead (_input);
     unsigned long now = millis ();
 
-    if (timer.is_started ())
-    {
-        if (x == current)
-        {
+    if (timer.is_started ()) {
+        if (x == current) {
             timer.stop ();
-        }
-        else
-        {
-            if (timer.is_reached (now))
-            {
+        } else {
+            if (timer.is_reached (now)) {
                 timer.stop ();
                 current = x;
             }
         }
-    }
-    else
-    {
-        if (x != current)
-        {
+    } else {
+        if (x != current) {
              timer.start (now, duration);
         }
     }
