@@ -36,23 +36,23 @@ Reset  NC
 5V     Flachband 0,1; Fotowiderstand-1; R2-4k7-2
 Gnd    Flachband2-3,4; Flachband-9,10,11,12
 Gnd    R1-100k-2
-Vin    Flachband-17,18 NEU: From Filtered Power +
+Vin    Flachband-17,18 From Filtered Power +
 
 Motortreiber
 
  1      Flachband-03,04; Arduino-9
  2      Flachband-05,06; Arduino-4
  3      Flachband-07,08; Motor-1
- 4      Flachband-09,10; Motortreiber-5,12,13; [Arduino-Gnd] NEU to Unfiltered Power -
- 5      Flachband-11,12; Motortreiber-4,12,13; [Arduino-Gnd] NEU to Unfiltered Power -
+ 4      Flachband-09,10; Motortreiber-5,12,13; to Unfiltered Power -
+ 5      Flachband-11,12; Motortreiber-4,12,13; to Unfiltered Power -
  6      Flachband-13,14; Motor-2
  7      Flachband-15,16; Arduino-3
- 8      Flachband-17,18; [Arduino-Vin] NEU to Unfiltered Power +
+ 8      Flachband-17,18; to Unfiltered Power +
  9      NC
 10      NC
 11      NC
-12      Motortreiber-13,4,5; [Arduino-Gnd] NEU to Unfiltered Power -
-13      Motortreiber-12,4,5; [Arduino-Gnd] NEU to Unfiltered Power -
+12      Motortreiber-13,4,5; to Unfiltered Power -
+13      Motortreiber-12,4,5; to Unfiltered Power -
 14      NC
 15      NC
 16      Flachband-01,02; Arduino-5V
@@ -71,9 +71,9 @@ Vom Stecker letzte zwei unbelegt (20-polig)
 03,04 Motortreiber 01; Arduino-9
 05,06 Motortreiber 02; Arduino-4
 07,08 Motortreiber 03; Motor-1
-09,10 Motortreiber 04; Motortreiber-05; [Arduino-Gnd] NEU: Unfiltered Power -
-11,12 Motortreiber 05; Motortreiber-04; [Arduino-Gnd] NEU: Unfiltered Power -
+09,10 Motortreiber 04; Motortreiber-05; Unfiltered Power -
+11,12 Motortreiber 05; Motortreiber-04; Unfiltered Power -
 13,14 Motortreiber 06; Motor-2
 15,16 Motortreiber 07; Arduino-3
-17,18 Motortreiber 08; [Arduino-Vin] NEU: Unfiltered Power +
+17,18 Motortreiber 08; Unfiltered Power +
 
